@@ -1,0 +1,14 @@
+{
+  "name": "chatgpt-chat-rea",
+  "version": "1.0.0",
+  "description": "A ChatGPT-style chat UI powered by the OpenRouter API. No build step, no dependencies.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node server.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
