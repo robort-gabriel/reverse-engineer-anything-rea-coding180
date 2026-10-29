@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claude Options</title>
+  <link rel="stylesheet" href="styles/theme.css" />
+  <link rel="stylesheet" href="styles/options.css" />
+</head>
+<body>
+  <div class="layout">
+    <nav>
+      <div class="brand serif"><span>✺</span> Claude</div>
+      <a href="#settings" data-tab="settings">Settings</a>
+      <a href="#permissions" data-tab="permissions">Permissions</a>
+      <a href="#shortcuts" data-tab="shortcuts">Shortcuts</a>
+      <a href="#about" data-tab="about">About</a>
+    </nav>
+    <main>
+      <section id="tab-settings">
+        <h1 class="serif">Settings</h1>
+        <div class="panel">
+          <h3>OpenRouter API</h3>
+          <label>API key</label>
+          <div class="inline"><input type="password" id="apiKey" placeholder="sk-or-v1-…" autocomplete="off" /><button class="btn" id="toggle-key">Show</button></div>
+          <p class="hint">Get your API key from <a href="https://openrouter.ai/keys" target="_blank">openrouter.ai/keys</a>. It is stored only in this browser (chrome.storage.local) and sent only to the base URL below.</p>
+          <label>Base URL</label>
+          <input type="url" id="baseUrl" />
+          <div class="inline gap"><button class="btn primary" id="save-api">Save API Key</button><button class="btn" id="test">Test connection</button><span id="api-status" class="status"></span></div>
+        </div>
+        <div class="panel">
+          <h3>Model</h3>
+          <label>Default model</label>
+          <input type="text" id="model" list="model-list" placeholder="anthropic/claude-sonnet-4.5" />
+          <datalist id="model-list"></datalist>
+          <p class="hint">Any OpenRouter model ID, sent verbatim to the API. Pick one that supports tool calling to use browser actions.</p>
+          <label>Extra models in the picker <span class="hint">(one per line)</span></label>
+          <textarea id="customModels" rows="3"></textarea>
+        </div>
+        <div class="panel">
+          <h3>System prompt</h3>
+          <textarea id="systemPrompt" rows="5" placeholder="Optional instructions appended to the built-in system prompt."></textarea>
+          <label>Max agent steps per message</label>
+          <input type="text" id="maxSteps" style="width:90px" />
+        </div>
+        <div class="inline gap"><button class="btn primary" id="save">Save settings</button><span id="status" class="status"></span></div>
+      </section>
+
+      <section id="tab-permissions" hidden>
+        <h1 class="serif">Permissions</h1>
+        <div class="panel">
+          <label class="check"><input type="checkbox" id="askBeforeActing" /> Ask before acting on a new site</label>
+          <p class="hint">When on, Claude asks you before reading or acting on a website for the first time.</p>
+        </div>
+        <div class="panel">
+          <h3>Allow actions on these sites</h3>
+          <div class="inline"><input type="text" id="site-input" placeholder="example.com" /><button class="btn" id="site-add">Add</button></div>
+          <ul id="sites" class="list"></ul>
+        </div>
+      </section>
+
+      <section id="tab-shortcuts" hidden>
+        <h1 class="serif">Shortcuts</h1>
+        <div class="panel">
+          <h3>Keyboard shortcut</h3>
+          <p class="hint">Configure the keyboard shortcut used to open Claude in Chrome (default ⌘E / Ctrl+E).</p>
+          <button class="btn" id="kbd">Edit shortcut</button>
+        </div>
+        <div class="panel">
+          <h3>My shortcuts</h3>
+          <p class="hint">Reusable prompts. Type <code>/</code> in the side panel chat to run one.</p>
+          <ul id="sc-list" class="list"></ul>
+          <h3 id="sc-form-title">Create shortcut</h3>
+          <input type="text" id="sc-name" placeholder="Name (no spaces), e.g. summarize" />
+          <textarea id="sc-prompt" rows="3" placeholder="Prompt"></textarea>
+          <div class="inline gap"><button class="btn primary" id="sc-save">Create shortcut</button><button class="btn" id="sc-cancel" hidden>Cancel</button><span id="sc-status" class="status"></span></div>
+        </div>
+      </section>
+
+      <section id="tab-about" hidden>
+        <h1 class="serif">About</h1>
+        <div class="panel">
+          <p>An independent re-implementation of the “Claude in Chrome” side-panel agent, powered by any model available through <a href="https://openrouter.ai" target="_blank">OpenRouter</a>. Not affiliated with or endorsed by Anthropic.</p>
+          <p class="hint">Clicking, typing and screenshots use the Chrome debugger API; Chrome shows a “debugging this browser” banner while the agent is active.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script type="module" src="options.js"></script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+:root {
+  --bg-000: 0 0% 100%;
+  --bg-100: 48 33.3% 97.1%;
+  --bg-200: 53 28.6% 94.5%;
+  --bg-300: 48 25% 92.2%;
+  --bg-400: 50 20.7% 88.6%;
+  --text-100: 60 2.6% 7.6%;
+  --text-200: 60 2.5% 23.3%;
+  --text-300: 60 2.5% 35%;
+  --text-400: 50 9% 50%;
+  --border: 51 16.5% 84.5%;
+  --brand: 15 54.2% 51.2%;
+  --brand-hover: 18 56.8% 43.5%;
+  --accent: 210 73.7% 40.2%;
+  --danger: 0 58% 45%;
+  --ok: 142 50% 32%;
+  --serif: ui-serif, "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-000: 60 2.1% 18.4%;
+    --bg-100: 60 2.7% 14.5%;
+    --bg-200: 30 3.3% 11.8%;
+    --bg-300: 60 2.6% 7.6%;
+    --bg-400: 0 0% 4%;
+    --text-100: 48 33.3% 97.1%;
+    --text-200: 60 1.5% 86.9%;
+    --text-300: 50 9% 73.7%;
+    --text-400: 50 5% 55%;
+    --border: 30 3.3% 22%;
+    --brand: 15 63.1% 59.6%;
+    --brand-hover: 15 54.2% 51.2%;
+    --accent: 210 65.5% 67.1%;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: hsl(var(--bg-100)); color: hsl(var(--text-100)); font: 14px/1.5 var(--sans); }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+.btn { border: 1px solid hsl(var(--border)); background: hsl(var(--bg-000)); border-radius: 8px; padding: 6px 12px; transition: background .12s; }
+.btn:hover { background: hsl(var(--bg-300)); }
+.btn.primary { background: hsl(var(--brand)); border-color: transparent; color: #fff; }
+.btn.primary:hover { background: hsl(var(--brand-hover)); }
+.btn.danger { color: hsl(var(--danger)); }
+.btn:disabled { opacity: .5; cursor: default; }
+.icon-btn { border: 0; background: transparent; border-radius: 8px; width: 30px; height: 30px; display: inline-grid; place-items: center; color: hsl(var(--text-300)); }
+.icon-btn:hover { background: hsl(var(--bg-300)); color: hsl(var(--text-100)); }
+.icon-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+input[type=text], input[type=password], input[type=url], textarea, select {
+  width: 100%; border: 1px solid hsl(var(--border)); background: hsl(var(--bg-000)); border-radius: 8px; padding: 8px 10px; outline: none;
+}
+input:focus, textarea:focus, select:focus { border-color: hsl(var(--brand)); box-shadow: 0 0 0 3px hsl(var(--brand) / .18); }
+.serif { font-family: var(--serif); }
+.md p { margin: 0 0 .7em; } .md p:last-child { margin: 0; }
+.md h2, .md h3, .md h4, .md h5 { font-family: var(--serif); margin: .9em 0 .4em; line-height: 1.25; }
+.md ul, .md ol { margin: 0 0 .7em; padding-left: 1.4em; }
+.md code { font: 12.5px var(--mono); background: hsl(var(--bg-300)); padding: 1px 5px; border-radius: 5px; }
+.md pre { background: hsl(var(--bg-300)); border-radius: 8px; padding: 10px 12px; overflow: auto; margin: 0 0 .7em; }
+.md pre code { background: none; padding: 0; }
+.md blockquote { margin: 0 0 .7em; padding-left: 12px; border-left: 3px solid hsl(var(--border)); color: hsl(var(--text-300)); }
+.md a { color: hsl(var(--accent)); }
+.md table { border-collapse: collapse; margin: 0 0 .7em; font-size: 13px; }
+.md th, .md td { border: 1px solid hsl(var(--border)); padding: 4px 8px; text-align: left; }

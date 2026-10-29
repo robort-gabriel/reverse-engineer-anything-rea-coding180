@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "Claude Chrome Extension: REA",
+  "version": "1.0.0",
+  "description": "A Claude-in-Chrome style browsing agent powered by any model on OpenRouter.",
+  "minimum_chrome_version": "116",
+  "icons": { "16": "icons/icon-16.png", "48": "icons/icon-48.png", "128": "icons/icon-128.png" },
+  "action": { "default_title": "Open Claude" },
+  "background": { "service_worker": "service-worker.js", "type": "module" },
+  "side_panel": { "default_path": "sidepanel.html" },
+  "options_page": "options.html",
+  "commands": {
+    "toggle-side-panel": {
+      "description": "Toggle Claude side panel",
+      "suggested_key": { "default": "Ctrl+E", "mac": "Command+E" }
+    }
+  },
+  "permissions": ["sidePanel", "storage", "activeTab", "scripting", "debugger", "tabs", "tabGroups", "webNavigation", "alarms", "notifications"],
+  "host_permissions": ["<all_urls>"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/accessibility-tree.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/agent-indicator.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

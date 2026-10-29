@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claude for Chrome</title>
+  <link rel="stylesheet" href="styles/theme.css" />
+  <link rel="stylesheet" href="styles/sidepanel.css" />
+</head>
+<body>
+  <div id="app">
+    <header>
+      <button class="icon-btn" id="btn-history" title="Chat history"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg></button>
+      <div class="title serif" id="title">New chat</div>
+      <button class="icon-btn" id="btn-new" title="New chat"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+      <button class="icon-btn" id="btn-settings" title="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+    </header>
+
+    <main id="chat">
+      <section id="welcome">
+        <div class="spark" aria-hidden="true">✺</div>
+        <h1 class="serif">How can I help you browse today?</h1>
+        <p id="welcome-sub">Claude can read, navigate and act on the page you're viewing.</p>
+        <div id="suggestions"></div>
+        <div id="nokey" hidden>
+          <p>Add your OpenRouter API key to get started.</p>
+          <button class="btn primary" id="btn-addkey">Configure OpenRouter</button>
+        </div>
+      </section>
+      <div id="messages"></div>
+    </main>
+
+    <aside id="history" hidden>
+      <div class="hist-head"><strong class="serif">Chats</strong><button class="icon-btn" id="hist-close" title="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+      <div id="hist-list"></div>
+    </aside>
+
+    <footer>
+      <div id="slash" hidden></div>
+      <div class="composer">
+        <textarea id="input" rows="1" placeholder="Reply to Claude…  (type / for shortcuts)"></textarea>
+        <div class="row">
+          <label class="ask" title="Ask before acting on new sites"><input type="checkbox" id="ask" /> Ask before acting</label>
+          <select id="model" title="Select model"></select>
+          <button class="send" id="send" title="Send"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+        </div>
+      </div>
+    </footer>
+  </div>
+  <script type="module" src="sidepanel.js"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+.layout { display: flex; min-height: 100vh; max-width: 980px; margin: 0 auto; }
+nav { width: 200px; padding: 28px 16px; border-right: 1px solid hsl(var(--border)); position: sticky; top: 0; height: 100vh; }
+.brand { font-size: 20px; margin-bottom: 20px; } .brand span { color: hsl(var(--brand)); }
+nav a { display: block; padding: 8px 12px; border-radius: 8px; color: hsl(var(--text-200)); text-decoration: none; margin-bottom: 2px; }
+nav a:hover { background: hsl(var(--bg-300)); } nav a.active { background: hsl(var(--bg-400)); color: hsl(var(--text-100)); font-weight: 500; }
+main { flex: 1; padding: 28px 36px 60px; max-width: 700px; }
+h1 { font-weight: 400; font-size: 28px; margin: 0 0 20px; } h3 { font: 500 15px var(--sans); margin: 0 0 10px; }
+section[hidden] { display: none; }
+.panel { background: hsl(var(--bg-000)); border: 1px solid hsl(var(--border)); border-radius: 14px; padding: 18px; margin-bottom: 16px; }
+label { display: block; font-weight: 500; margin: 12px 0 5px; font-size: 13px; } label.check { display: flex; gap: 8px; align-items: center; margin: 0; }
+.hint { color: hsl(var(--text-300)); font-size: 12.5px; margin: 6px 0; font-weight: 400; } .hint a { color: hsl(var(--accent)); }
+.inline { display: flex; gap: 8px; align-items: center; margin-top: 6px; } .inline.gap { margin-top: 14px; } .inline input { flex: 1; }
+.status { font-size: 13px; color: hsl(var(--ok)); } .status.err { color: hsl(var(--danger)); }
+.list { list-style: none; padding: 0; margin: 10px 0; } .list li { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid hsl(var(--border)); border-radius: 8px; margin-bottom: 6px; }
+.list li .grow { flex: 1; min-width: 0; } .list li small { display: block; color: hsl(var(--text-300)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+code { font: 12.5px var(--mono); background: hsl(var(--bg-300)); padding: 1px 5px; border-radius: 5px; }
+textarea { resize: vertical; } #sc-name { margin-bottom: 8px; }
+@media (max-width: 640px) { .layout { flex-direction: column; } nav { width: auto; height: auto; position: static; border: 0; display: flex; gap: 4px; flex-wrap: wrap; } .brand { width: 100%; } main { padding: 20px 16px; } }
