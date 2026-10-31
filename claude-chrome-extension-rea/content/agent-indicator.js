@@ -4,7 +4,7 @@
   function show() {
     if (el) return;
     el = document.createElement("div");
-    el.style.cssText = "position:fixed;inset:0;z-index:2147483647;pointer-events:none;box-shadow:inset 0 0 0 3px rgba(217,119,87,.85),inset 0 0 36px rgba(217,119,87,.45);animation:orpulse 2s ease-in-out infinite";
+    el.style.cssText = "position:fixed;inset:0;z-index:2147483647;pointer-events:none;box-shadow:inset 0 0 0 3px rgba(20,184,166,.85),inset 0 0 36px rgba(20,184,166,.45);animation:orpulse 2s ease-in-out infinite";
     const st = document.createElement("style");
     st.textContent = "@keyframes orpulse{50%{opacity:.55}}";
     el.appendChild(st);

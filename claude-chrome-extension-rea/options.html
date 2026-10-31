@@ -3,17 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Claude Options</title>
+  <title>Web Buddy Options</title>
   <link rel="stylesheet" href="styles/theme.css" />
   <link rel="stylesheet" href="styles/options.css" />
 </head>
 <body>
   <div class="layout">
     <nav>
-      <div class="brand serif"><span>✺</span> Claude</div>
+      <div class="brand serif"><span>✺</span> Web Buddy</div>
       <a href="#settings" data-tab="settings">Settings</a>
       <a href="#permissions" data-tab="permissions">Permissions</a>
       <a href="#shortcuts" data-tab="shortcuts">Shortcuts</a>
+      <a href="#help" data-tab="help">Help</a>
       <a href="#about" data-tab="about">About</a>
     </nav>
     <main>
@@ -30,7 +31,13 @@
         </div>
         <div class="panel">
           <h3>Model</h3>
-          <label>Default model</label>
+          <div class="seg" id="tier" role="group" aria-label="Model type">
+            <button type="button" data-tier="paid">Paid</button>
+            <button type="button" data-tier="free">Free</button>
+          </div>
+          <p class="hint" id="tier-hint"></p>
+          <div class="inline" id="verify-row" hidden><span class="hint" id="verify-status"></span><button type="button" class="btn" id="recheck">Re-check</button></div>
+          <label id="model-label">Default model</label>
           <input type="text" id="model" list="model-list" placeholder="anthropic/claude-sonnet-4.5" />
           <datalist id="model-list"></datalist>
           <p class="hint">Any OpenRouter model ID, sent verbatim to the API. Pick one that supports tool calling to use browser actions.</p>
@@ -38,8 +45,17 @@
           <textarea id="customModels" rows="3"></textarea>
         </div>
         <div class="panel">
-          <h3>System prompt</h3>
-          <textarea id="systemPrompt" rows="5" placeholder="Optional instructions appended to the built-in system prompt."></textarea>
+          <h3>Persona</h3>
+          <p class="hint">Pick a role and Web Buddy works in that mode. It adds expert instructions and tailored starter prompts in the side panel. Click an avatar to upload your own picture for that persona.</p>
+          <div class="personas" id="personas"></div>
+        </div>
+        <div class="panel" id="sys-panel" hidden>
+          <h3>System instructions</h3>
+          <p class="hint">You’re using <b>My persona</b>. These instructions define it. Pick a preset above to use a ready-made persona instead.</p>
+          <textarea id="systemPrompt" rows="6" placeholder="e.g. You are a friendly travel planner. Compare options on the pages I open and always list prices."></textarea>
+        </div>
+        <div class="panel">
+          <h3>Agent</h3>
           <label>Max agent steps per message</label>
           <input type="text" id="maxSteps" style="width:90px" />
         </div>
@@ -50,7 +66,7 @@
         <h1 class="serif">Permissions</h1>
         <div class="panel">
           <label class="check"><input type="checkbox" id="askBeforeActing" /> Ask before acting on a new site</label>
-          <p class="hint">When on, Claude asks you before reading or acting on a website for the first time.</p>
+          <p class="hint">When on, Web Buddy asks you before reading or acting on a website for the first time.</p>
         </div>
         <div class="panel">
           <h3>Allow actions on these sites</h3>
@@ -63,7 +79,7 @@
         <h1 class="serif">Shortcuts</h1>
         <div class="panel">
           <h3>Keyboard shortcut</h3>
-          <p class="hint">Configure the keyboard shortcut used to open Claude in Chrome (default ⌘E / Ctrl+E).</p>
+          <p class="hint">Configure the keyboard shortcut used to open Web Buddy (default ⌘E / Ctrl+E).</p>
           <button class="btn" id="kbd">Edit shortcut</button>
         </div>
         <div class="panel">
@@ -77,15 +93,57 @@
         </div>
       </section>
 
+      <section id="tab-help" hidden>
+        <h1 class="serif">Help</h1>
+        <div class="panel">
+          <h3>Getting started</h3>
+          <ol class="steps">
+            <li>Create a free API key at <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">openrouter.ai/keys</a>.</li>
+            <li>Open <a href="#settings">Settings</a>, paste the key, then <b>Save API Key</b> and <b>Test connection</b>.</li>
+            <li>Open the side panel with <b>⌘E</b> / <b>Ctrl+E</b> or the toolbar icon, pick a persona and ask away.</li>
+          </ol>
+        </div>
+        <div class="panel faq">
+          <h3>Common questions</h3>
+          <details><summary>A model is rate limited or not responding</summary>
+            <p>Free models are often busy. Web Buddy only lists free models that passed a live check, and switches to another working one automatically mid-task. Use <b>Re-check</b> in Settings → Model to refresh the list, or switch to <b>Paid</b> for the most reliable results.</p></details>
+          <details><summary>Which model should I use?</summary>
+            <p>Pick one that supports tool calling, or browser actions won't work. For screenshots you also need a vision-capable model.</p></details>
+          <details><summary>Why does Chrome show “debugging this browser”?</summary>
+            <p>Clicking, typing and screenshots use Chrome's debugger API. Chrome shows its banner while Web Buddy is acting and removes it when the task ends.</p></details>
+          <details><summary>What data leaves my browser?</summary>
+            <p>Your messages, and page content the agent reads for your request, go to OpenRouter and the model you chose. Your API key and chats stay in this browser. Avoid using Web Buddy on pages with sensitive information, and keep <b>Ask before acting</b> on in Permissions.</p></details>
+          <details><summary>Persona or system instructions?</summary>
+            <p>Use either a ready-made persona or <b>My persona</b>, where your own system instructions define the persona. Upload an avatar for any of them by clicking its picture in Settings.</p></details>
+        </div>
+        <div class="panel">
+          <h3>Need something custom?</h3>
+          <p>Want a change, a custom persona set, your own branding, or a reverse-engineered app built for you? Contact the developer for modifications and personalization.</p>
+          <div class="inline gap"><a class="btn primary" href="https://coding180.com/contact" target="_blank" rel="noopener">Contact the developer</a><a class="btn" href="https://coding180.com/forum/reverse-engineer/clone-claude-chrome-extension-rea" target="_blank" rel="noopener">Ask on the forum</a></div>
+        </div>
+      </section>
+
       <section id="tab-about" hidden>
         <h1 class="serif">About</h1>
         <div class="panel">
-          <p>An independent re-implementation of the “Claude in Chrome” side-panel agent, powered by any model available through <a href="https://openrouter.ai" target="_blank">OpenRouter</a>. Not affiliated with or endorsed by Anthropic.</p>
+          <h3>Web Buddy by coding180</h3>
+          <p>A side-panel browsing agent powered by any model available through <a href="https://openrouter.ai" target="_blank" rel="noopener">OpenRouter</a>, free or paid. It is an independent, clean-room project built with the REA (reverse-engineer-anything) tool. Not affiliated with or endorsed by Anthropic or OpenRouter.</p>
           <p class="hint">Clicking, typing and screenshots use the Chrome debugger API; Chrome shows a “debugging this browser” banner while the agent is active.</p>
+        </div>
+        <div class="panel about-author">
+          <h3>About the developer</h3>
+          <p>Hi, I’m <strong>Robort Gabriel</strong>, the developer behind <strong>coding180</strong>. I reverse-engineer apps and rebuild them from scratch so we can all see how they work, learn from them and make them better.</p>
+          <p>Want the source code of this extension, or to explore <a href="https://coding180.com/forum/reverse-engineer/clone-claude-chrome-extension-rea" target="_blank" rel="noopener">more reverse-engineered software</a>? Join us on the coding180 forum.</p>
+          <p>Need changes or a version made for you? Contact me for modifications and personalization.</p>
+          <div class="inline gap">
+            <a class="btn primary" href="https://coding180.com/forum/reverse-engineer/clone-claude-chrome-extension-rea" target="_blank" rel="noopener">Visit the coding180 forum</a>
+            <a class="btn" href="https://coding180.com/contact" target="_blank" rel="noopener">Contact the developer</a>
+          </div>
         </div>
       </section>
     </main>
   </div>
+  <input type="file" id="avatar-file" accept="image/*" hidden />
   <script type="module" src="options.js"></script>
 </body>
 </html>

@@ -1,17 +1,17 @@
 :root {
   --bg-000: 0 0% 100%;
-  --bg-100: 48 33.3% 97.1%;
-  --bg-200: 53 28.6% 94.5%;
-  --bg-300: 48 25% 92.2%;
-  --bg-400: 50 20.7% 88.6%;
-  --text-100: 60 2.6% 7.6%;
-  --text-200: 60 2.5% 23.3%;
-  --text-300: 60 2.5% 35%;
-  --text-400: 50 9% 50%;
-  --border: 51 16.5% 84.5%;
-  --brand: 15 54.2% 51.2%;
-  --brand-hover: 18 56.8% 43.5%;
-  --accent: 210 73.7% 40.2%;
+  --bg-100: 190 30% 97%;
+  --bg-200: 190 26% 94%;
+  --bg-300: 192 22% 91%;
+  --bg-400: 192 18% 86%;
+  --text-100: 205 40% 10%;
+  --text-200: 205 28% 22%;
+  --text-300: 205 17% 36%;
+  --text-400: 205 11% 50%;
+  --border: 192 18% 83%;
+  --brand: 174 72% 30%;
+  --brand-hover: 174 76% 24%;
+  --accent: 36 92% 36%;
   --danger: 0 58% 45%;
   --ok: 142 50% 32%;
   --serif: ui-serif, "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif;
@@ -21,19 +21,19 @@
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg-000: 60 2.1% 18.4%;
-    --bg-100: 60 2.7% 14.5%;
-    --bg-200: 30 3.3% 11.8%;
-    --bg-300: 60 2.6% 7.6%;
-    --bg-400: 0 0% 4%;
-    --text-100: 48 33.3% 97.1%;
-    --text-200: 60 1.5% 86.9%;
-    --text-300: 50 9% 73.7%;
-    --text-400: 50 5% 55%;
-    --border: 30 3.3% 22%;
-    --brand: 15 63.1% 59.6%;
-    --brand-hover: 15 54.2% 51.2%;
-    --accent: 210 65.5% 67.1%;
+    --bg-000: 208 30% 16%;
+    --bg-100: 208 32% 12%;
+    --bg-200: 208 34% 10%;
+    --bg-300: 208 36% 8%;
+    --bg-400: 208 40% 5%;
+    --text-100: 190 30% 96%;
+    --text-200: 192 18% 86%;
+    --text-300: 195 12% 72%;
+    --text-400: 200 8% 56%;
+    --border: 208 22% 22%;
+    --brand: 172 66% 46%;
+    --brand-hover: 172 62% 38%;
+    --accent: 40 95% 62%;
     color-scheme: dark;
   }
 }
@@ -65,3 +65,6 @@ input:focus, textarea:focus, select:focus { border-color: hsl(var(--brand)); box
 .md a { color: hsl(var(--accent)); }
 .md table { border-collapse: collapse; margin: 0 0 .7em; font-size: 13px; }
 .md th, .md td { border: 1px solid hsl(var(--border)); padding: 4px 8px; text-align: left; }
+.avatar { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; object-fit: cover; background: hsl(var(--bg-300)); font-size: 15px; line-height: 1; flex: none; overflow: hidden; }
+.avatar.sm { width: 20px; height: 20px; font-size: 11px; }
+.avatar.lg { width: 64px; height: 64px; font-size: 32px; }

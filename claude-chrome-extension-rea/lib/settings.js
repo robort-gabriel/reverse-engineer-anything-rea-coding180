@@ -2,7 +2,11 @@ export const DEFAULTS = {
   apiKey: "",
   baseUrl: "https://openrouter.ai/api/v1",
   model: "anthropic/claude-sonnet-4.5",
+  modelTier: "paid", // "paid" | "free": which model list/selection is active
+  freeModel: "meta-llama/llama-3.3-70b-instruct:free",
   customModels: [],
+  personaId: "default",
+  personaAvatars: {}, // personaId -> data: URL
   systemPrompt: "",
   askBeforeActing: true,
   allowedSites: [],
@@ -33,15 +37,32 @@ export const SUGGESTED_MODELS = [
   "deepseek/deepseek-chat-v3.1",
 ];
 
+export const SUGGESTED_FREE_MODELS = [
+  "meta-llama/llama-3.3-70b-instruct:free",
+  "deepseek/deepseek-chat-v3.1:free",
+  "google/gemini-2.0-flash-exp:free",
+  "qwen/qwen3-coder:free",
+];
+
+// The model the agent should call for the current free/paid switch.
+export function activeModel(s) {
+  return s.modelTier === "free" ? s.freeModel : s.model;
+}
+
 let modelCache = null;
 export async function fetchModels(settings) {
   if (modelCache) return modelCache;
   try {
     const r = await fetch(settings.baseUrl.replace(/\/$/, "") + "/models");
     const j = await r.json();
-    modelCache = (j.data || []).map((m) => ({ id: m.id, name: m.name || m.id, tools: (m.supported_parameters || []).includes("tools") }));
+    modelCache = (j.data || []).map((m) => ({
+      id: m.id,
+      name: m.name || m.id,
+      tools: (m.supported_parameters || []).includes("tools"),
+      free: m.id.endsWith(":free") || (Number(m.pricing?.prompt) === 0 && Number(m.pricing?.completion) === 0),
+    }));
   } catch {
-    modelCache = SUGGESTED_MODELS.map((id) => ({ id, name: id, tools: true }));
+    modelCache = [...SUGGESTED_MODELS.map((id) => ({ id, name: id, tools: true, free: false })), ...SUGGESTED_FREE_MODELS.map((id) => ({ id, name: id, tools: true, free: true }))];
   }
   return modelCache;
 }

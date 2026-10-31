@@ -60,7 +60,7 @@ export const TOOL_LABELS = {
   update_plan: () => "Proposing a plan",
 };
 
-export const SYSTEM_PROMPT = `You are Claude, an AI assistant working inside the user's Chrome browser through a side panel. You can see and control the browser with tools.
+export const SYSTEM_PROMPT = `You are Web Buddy, built by coding180, an AI assistant working inside the user's Chrome browser through a side panel. You can see and control the browser with tools.
 
 Guidelines:
 - For questions about the current page, use get_page_text or read_page rather than guessing.

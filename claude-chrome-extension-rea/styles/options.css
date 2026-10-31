@@ -10,6 +10,24 @@ section[hidden] { display: none; }
 label { display: block; font-weight: 500; margin: 12px 0 5px; font-size: 13px; } label.check { display: flex; gap: 8px; align-items: center; margin: 0; }
 .hint { color: hsl(var(--text-300)); font-size: 12.5px; margin: 6px 0; font-weight: 400; } .hint a { color: hsl(var(--accent)); }
 .inline { display: flex; gap: 8px; align-items: center; margin-top: 6px; } .inline.gap { margin-top: 14px; } .inline input { flex: 1; }
+.personas { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; margin-top: 10px; }
+.persona { text-align: left; cursor: pointer; position: relative; border: 1px solid hsl(var(--border)); background: hsl(var(--bg-000)); border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; gap: 3px; }
+.persona:hover { background: hsl(var(--bg-200)); }
+.persona.on { border-color: hsl(var(--brand)); box-shadow: 0 0 0 2px hsl(var(--brand) / .25); }
+.persona .top { display: flex; align-items: center; gap: 8px; }
+.persona .pa { border: 0; padding: 0; background: none; border-radius: 50%; position: relative; }
+.persona .pa:hover .avatar { outline: 2px solid hsl(var(--brand)); }
+.persona .rm { position: absolute; top: 6px; right: 8px; border: 0; background: none; color: hsl(var(--text-400)); font-size: 12px; padding: 2px 4px; }
+.persona .rm:hover { color: hsl(var(--danger)); }
+.persona b { font-weight: 600; } .persona small { color: hsl(var(--text-300)); line-height: 1.35; }
+.seg { display: inline-flex; border: 1px solid hsl(var(--border)); border-radius: 10px; padding: 3px; background: hsl(var(--bg-200)); }
+.seg button { border: 0; background: transparent; padding: 5px 18px; border-radius: 7px; color: hsl(var(--text-300)); font-weight: 500; }
+.seg button.on { background: hsl(var(--brand)); color: #fff; }
+.btn { text-decoration: none; display: inline-block; }
+.steps { margin: 0; padding-left: 1.3em; } .steps li { margin-bottom: 6px; }
+.faq details { border-top: 1px solid hsl(var(--border)); padding: 10px 0; } .faq details:first-of-type { border-top: 0; }
+.faq summary { cursor: pointer; font-weight: 500; } .faq details p { margin: 8px 0 0; color: hsl(var(--text-200)); }
+a { color: hsl(var(--accent)); } a.btn { color: inherit; } a.btn.primary { color: #fff; }
 .status { font-size: 13px; color: hsl(var(--ok)); } .status.err { color: hsl(var(--danger)); }
 .list { list-style: none; padding: 0; margin: 10px 0; } .list li { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid hsl(var(--border)); border-radius: 8px; margin-bottom: 6px; }
 .list li .grow { flex: 1; min-width: 0; } .list li small { display: block; color: hsl(var(--text-300)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

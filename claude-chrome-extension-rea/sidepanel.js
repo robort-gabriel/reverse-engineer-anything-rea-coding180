@@ -1,6 +1,8 @@
-import { getSettings, saveSettings, fetchModels, SUGGESTED_MODELS, listChats, saveChat, deleteChat } from "./lib/settings.js";
-import { streamChat } from "./lib/openrouter.js";
+import { getSettings, saveSettings, fetchModels, SUGGESTED_MODELS, SUGGESTED_FREE_MODELS, activeModel, listChats, saveChat, deleteChat } from "./lib/settings.js";
+import { streamChatResilient } from "./lib/openrouter.js";
+import { verifyFreeModels, cachedWorkingFree } from "./lib/models.js";
 import { renderMarkdown } from "./lib/markdown.js";
+import { getPersona, personaPrompt, avatarHTML, PERSONAS } from "./lib/personas.js";
 import { TOOLS, TOOL_LABELS, SYSTEM_PROMPT } from "./lib/tools.js";
 
 const $ = (id) => document.getElementById(id);
@@ -22,23 +24,73 @@ const SUGGESTIONS = [
   settings = await getSettings();
   chat = newChat();
   await renderModels();
-  $("ask").checked = settings.askBeforeActing;
   renderWelcome();
   bind();
   chrome.storage.onChanged.addListener(async (c) => {
-    if (c.settings) { settings = await getSettings(); await renderModels(); renderWelcome(); $("ask").checked = settings.askBeforeActing; }
+    if (c.settings) { settings = await getSettings(); await renderModels(); renderWelcome(); }
   });
 })();
 
+let verifyRun = 0, verifyCtl = null, loadToken = 0;
+// Show a spinner (and disable the picker) until the model list has finished loading/verifying.
 async function renderModels() {
+  const token = ++loadToken;
+  setModelLoading(true);
+  try { await loadModels(); } finally { if (token === loadToken) setModelLoading(false); }
+}
+function setModelLoading(on) {
+  $("model-loading").hidden = !on;
+  $("model").disabled = on;
+  if (on && !$("model").options.length) $("model").append(new Option("Loading models…", ""));
+}
+async function loadModels() {
   const sel = $("model");
-  sel.innerHTML = "";
-  const ids = new Set([settings.model, ...settings.customModels, ...SUGGESTED_MODELS]);
-  for (const id of ids) sel.append(new Option(id, id));
-  sel.value = settings.model;
+  const free = settings.modelTier === "free";
+  const tierBtn = $("tier");
+  tierBtn.textContent = free ? "Free" : "Paid";
+  tierBtn.classList.toggle("free", free);
+  const fill = (ids) => {
+    sel.innerHTML = "";
+    for (const id of new Set(ids)) sel.append(new Option(id, id));
+    sel.value = activeModel(settings);
+  };
+  if (!free) return fill([settings.model, ...settings.customModels, ...SUGGESTED_MODELS]);
+
+  // Free: only list models verified as working. Show what's already known, then verify in the background.
+  const run = ++verifyRun;
+  verifyCtl?.abort();
+  verifyCtl = new AbortController();
+  const known = await cachedWorkingFree();
+  fill([settings.freeModel, ...known]);
+  if (!settings.apiKey) return;
+  tierBtn.title = "Checking free models…";
+  const working = await verifyFreeModels(settings, {
+    signal: verifyCtl.signal,
+    onProgress: ({ working }) => { if (run === verifyRun) fill(working.length ? working : [settings.freeModel]); },
+  });
+  tierBtn.title = "Switch between free and paid models";
+  if (run !== verifyRun || settings.modelTier !== "free") return;
+  if (working.length) {
+    // The selected free model isn't verified: move to one that is.
+    if (!working.includes(settings.freeModel)) { settings = await saveSettings({ freeModel: working[0] }); }
+    fill(working);
+  } else fill([settings.freeModel]);
+}
+
+function renderPersona() {
+  const p = getPersona(settings.personaId);
+  $("persona").innerHTML = avatarHTML(settings, p, "sm") + `<span class="pname">${esc(p.name)}</span>`;
+  $("persona-menu").innerHTML = "";
+  for (const q of PERSONAS) {
+    const b = el("button", "pitem" + (q.id === p.id ? " on" : ""), avatarHTML(settings, q) + `<span><b>${esc(q.name)}</b><small>${esc(q.description)}</small></span>`);
+    b.onclick = () => { $("persona-menu").hidden = true; saveSettings({ personaId: q.id }); };
+    $("persona-menu").append(b);
+  }
 }
 
 function renderWelcome() {
+  renderPersona();
+  $("welcome-avatar").innerHTML = avatarHTML(settings, getPersona(settings.personaId), "lg");
   const empty = chat.messages.length === 0;
   $("welcome").hidden = !empty;
   $("nokey").hidden = !!settings.apiKey;
@@ -46,7 +98,7 @@ function renderWelcome() {
   const box = $("suggestions");
   box.innerHTML = "";
   if (settings.apiKey)
-    for (const [t, d] of SUGGESTIONS) {
+    for (const [t, d] of getPersona(settings.personaId).suggestions || SUGGESTIONS) {
       const b = el("button", "sugg", `<b>${esc(t)}</b><span>${esc(d)}</span>`);
       b.onclick = () => send(t);
       box.append(b);
@@ -56,11 +108,14 @@ function renderWelcome() {
 function bind() {
   $("btn-new").onclick = () => { if (running) return; chat = newChat(); $("messages").innerHTML = ""; $("title").textContent = "New chat"; renderWelcome(); $("input").focus(); };
   $("btn-settings").onclick = () => chrome.runtime.openOptionsPage();
+  $("btn-help").onclick = () => chrome.tabs.create({ url: chrome.runtime.getURL("options.html#help") });
   $("btn-addkey").onclick = () => chrome.runtime.openOptionsPage();
   $("btn-history").onclick = openHistory;
+  $("persona").onclick = (e) => { e.stopPropagation(); $("persona-menu").hidden = !$("persona-menu").hidden; };
+  document.addEventListener("click", (e) => { if (!$("persona-menu").contains(e.target)) $("persona-menu").hidden = true; });
   $("hist-close").onclick = () => ($("history").hidden = true);
-  $("model").onchange = (e) => saveSettings({ model: e.target.value });
-  $("ask").onchange = (e) => saveSettings({ askBeforeActing: e.target.checked });
+  $("model").onchange = (e) => saveSettings(settings.modelTier === "free" ? { freeModel: e.target.value } : { model: e.target.value });
+  $("tier").onclick = () => saveSettings({ modelTier: settings.modelTier === "free" ? "paid" : "free" });
   $("send").onclick = () => (running ? abort?.abort() : send($("input").value));
   const input = $("input");
   input.addEventListener("input", () => { input.style.height = "auto"; input.style.height = Math.min(160, input.scrollHeight) + "px"; slashMenu(); });
@@ -138,7 +193,8 @@ function redraw() {
 // ---------- rendering helpers ----------
 const scroll = () => { const c = $("chat"); c.scrollTop = c.scrollHeight; };
 function addUser(text) { const m = el("div", "msg user"); const b = el("div", "bubble"); b.textContent = text; m.append(b); $("messages").append(m); scroll(); }
-function addAssistant(text) { const m = el("div", "msg assistant"); const d = el("div", "md"); d.innerHTML = renderMarkdown(text); m.append(d); $("messages").append(m); scroll(); return d; }
+function addAssistant(text) { const m = el("div", "msg assistant"); m.insertAdjacentHTML("beforeend", avatarHTML(settings, getPersona(settings.personaId), "sm")); const d = el("div", "md"); d.innerHTML = renderMarkdown(text); m.append(d); $("messages").append(m); scroll(); return d; }
+function addNotice(text) { const m = el("div", "msg notice"); m.textContent = text; $("messages").append(m); scroll(); }
 function addError(text) { const m = el("div", "msg error"); const b = el("div", "bubble"); b.textContent = text; m.append(b); $("messages").append(m); scroll(); }
 function toolRow(name, args) {
   const label = (TOOL_LABELS[name] || (() => name))(args);
@@ -179,7 +235,7 @@ async function authorize(name, input, tab) {
   const host = name === "navigate" && !/^(back|forward)$/.test(input.url) ? hostOf(/^[a-z]+:/i.test(input.url) ? input.url : "https://" + input.url) : hostOf(tab.url);
   if (!host || sessionAllowed.has(host) || sessionAllowed.has("*") || settings.allowedSites.includes(host)) return true;
   const verb = READ_ONLY.has(name) ? "read" : "act on";
-  const choice = await ask("Asking to use " + esc(host), `<p>Claude wants to ${verb} <b>${esc(host)}</b>.</p>`, [
+  const choice = await ask("Asking to use " + esc(host), `<p>Web Buddy wants to ${verb} <b>${esc(host)}</b>.</p>`, [
     ["Allow once", "once", "primary"], ["Always allow this site", "always"], ["Deny", "deny", "danger"],
   ]);
   if (choice === "deny") return false;
@@ -200,7 +256,7 @@ function prepareMessages() {
       if (kept++ >= 2) out[i].content = out[i].content.map((p) => (p.type === "image_url" ? { type: "text", text: "[older screenshot omitted]" } : p));
     }
   }
-  const sys = [SYSTEM_PROMPT, settings.systemPrompt].filter(Boolean).join("\n\n");
+  const sys = [SYSTEM_PROMPT, personaPrompt(settings), settings.systemPrompt].filter(Boolean).join("\n\n");
   return [{ role: "system", content: sys }, ...out.map(({ display, hidden, ...m }) => m)];
 }
 
@@ -221,8 +277,12 @@ async function send(text) {
   try {
     for (let step = 0; step < settings.maxSteps; step++) {
       let live = null, liveEl = null;
-      const reply = await streamChat({
+      const reply = await streamChatResilient({
         settings, messages: prepareMessages(), tools: TOOLS, signal: abort.signal,
+        onSwitch: ({ from, to, reason }) => {
+          liveEl?.closest(".msg")?.remove(); liveEl = null; // drop text from the failed attempt
+          addNotice(from === to ? `↻ ${from}: ${reason}…` : `↻ ${from} ${reason}. Continuing with ${to}.`);
+        },
         onText: (t) => { if (!liveEl) liveEl = addAssistant(""); live = t; liveEl.innerHTML = renderMarkdown(t); scroll(); },
       });
       const am = { role: "assistant", content: reply.content || null };
@@ -243,7 +303,7 @@ async function send(text) {
           if (name === "update_plan") {
             const dom = (input.domains || []).map((d) => `<li>${esc(d)}</li>`).join("");
             const steps = (input.approach || []).map((d) => `<li>${esc(d)}</li>`).join("");
-            const c = await ask("Claude's plan", `<p>Sites to use:</p><ul>${dom}</ul><p>Approach:</p><ul>${steps}</ul>`, [["Approve plan", "ok", "primary"], ["Reject", "deny", "danger"]]);
+            const c = await ask("Web Buddy's plan", `<p>Sites to use:</p><ul>${dom}</ul><p>Approach:</p><ul>${steps}</ul>`, [["Approve plan", "ok", "primary"], ["Reject", "deny", "danger"]]);
             if (c === "ok") { (input.domains || []).forEach((d) => sessionAllowed.add(d)); content = "Plan approved. Proceed."; }
             else { content = "Error: The user rejected the plan."; ok = false; }
           } else if (NEEDS_TAB.has(name) && !(await authorize(name, input, cur || {}))) {
